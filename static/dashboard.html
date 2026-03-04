@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Engagement Analytics</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1>Student Engagement Analytics</h1>
+        <div class="header-meta">
+            <span class="api-status" id="api-status">Connecting...</span>
+            <a href="/api/docs" class="docs-link">API Docs</a>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <!-- Overview Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="label">Total Students</div>
+                <div class="value" id="total-students">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Sessions</div>
+                <div class="value" id="total-sessions">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Avg Duration</div>
+                <div class="value" id="avg-duration">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Avg Engagement</div>
+                <div class="value accent" id="avg-engagement">--</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid-2">
+            <div class="card">
+                <h3>Sessions by Course</h3>
+                <div class="chart-container"><canvas id="courseChart"></canvas></div>
+            </div>
+            <div class="card">
+                <h3>Engagement Score Trend</h3>
+                <div class="chart-container"><canvas id="trendChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Top Students -->
+        <div class="card">
+            <h3>Top Students by Engagement</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Rank</th><th>Name</th><th>Major</th><th>Sessions</th><th>Avg Score</th></tr></thead>
+                    <tbody id="top-students-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

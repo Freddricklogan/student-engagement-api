@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: Student Engagement Analytics API
+  description: REST API for tracking and analyzing student engagement metrics in educational platforms.
+  version: 1.0.0
+  contact:
+    name: Freddrick Logan
+    url: https://github.com/Freddricklogan
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    Student:
+      type: object
+      properties:
+        id: { type: integer }
+        student_id: { type: string }
+        first_name: { type: string }
+        last_name: { type: string }
+        email: { type: string, format: email }
+        major: { type: string }
+        enrollment_date: { type: string, format: date }
+        status: { type: string, enum: [active, inactive, graduated] }
+
+    Session:
+      type: object
+      properties:
+        id: { type: integer }
+        student_id: { type: integer }
+        course_id: { type: string }
+        start_time: { type: string, format: date-time }
+        end_time: { type: string, format: date-time }
+        duration_minutes: { type: number }
+        platform: { type: string }
+
+    EngagementEvent:
+      type: object
+      properties:
+        id: { type: integer }
+        session_id: { type: integer }
+        event_type: { type: string }
+        event_data: { type: string }
+        engagement_score: { type: number, minimum: 0, maximum: 1 }
+        timestamp: { type: string, format: date-time }
+
+paths:
+  /api/students:
+    get:
+      summary: List students
+      parameters:
+        - name: major
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, default: active }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated list of students
+    post:
+      summary: Create a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '201':
+          description: Student created
+
+  /api/students/{id}:
+    get:
+      summary: Get a student by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Student details
+        '404':
+          description: Student not found
+
+  /api/sessions:
+    get:
+      summary: List sessions
+      parameters:
+        - name: student_id
+          in: query
+          schema: { type: integer }
+        - name: course_id
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: Paginated list of sessions
+    post:
+      summary: Create a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Session'
+      responses:
+        '201':
+          description: Session created
+
+  /api/events:
+    get:
+      summary: List engagement events
+      parameters:
+        - name: session_id
+          in: query
+          schema: { type: integer }
+        - name: event_type
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: Paginated list of events
+    post:
+      summary: Record an engagement event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EngagementEvent'
+      responses:
+        '201':
+          description: Event recorded
+
+  /api/analytics/overview:
+    get:
+      summary: Get engagement overview metrics
+      responses:
+        '200':
+          description: Overview statistics
+
+  /api/analytics/sessions-by-course:
+    get:
+      summary: Get session counts by course
+      responses:
+        '200':
+          description: Course session analytics
+
+  /api/analytics/engagement-trend:
+    get:
+      summary: Get daily engagement score trend
+      responses:
+        '200':
+          description: Daily engagement data
+
+  /api/analytics/top-students:
+    get:
+      summary: Get top students by engagement
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 10 }
+      responses:
+        '200':
+          description: Top engaged students
