@@ -1,5 +1,8 @@
 # Student Engagement Analytics API
 
+**[Live demo / docs](https://freddricklogan.github.io/student-engagement-api/)** &nbsp;|&nbsp; [Portfolio](https://fredlogan.phd) &nbsp;|&nbsp; [All Projects](https://freddricklogan.github.io/projects/)
+
+
 A RESTful API built with Flask for tracking and analyzing student engagement metrics in educational platforms. Includes a built-in analytics dashboard and OpenAPI documentation.
 
 ## Features
