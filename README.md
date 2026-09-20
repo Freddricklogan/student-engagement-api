@@ -43,6 +43,8 @@ commitments:
 path resolves with a byte-identical response body. `/api/analytics/overview` is now an
 alias for the canonical `/api/v1/analytics/summary`; a test asserts the two bodies match.
 
+**[→ Read the full case study](docs/CASE_STUDY.md)**
+
 **Measured in this build:** 146 tests, **98% statement+branch coverage**, `ruff` clean,
 `mypy --strict` clean across 45 source files, `bandit` clean, `pip-audit` reporting no
 known vulnerabilities. Every number in this README was produced by a command in this
