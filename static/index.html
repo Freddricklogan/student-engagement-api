@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://img.shields.io; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Student Engagement Analytics API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="landing">
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__title">
+      <h1>Student Engagement Analytics API</h1>
+      <p class="tagline">Who is disengaging, in which course, and since when — answered from event data.</p>
+    </div>
+    <nav class="site-header__actions">
+      <span class="pill" id="api-state" data-state="checking">Checking API&hellip;</span>
+      <a class="btn btn--ghost" href="https://github.com/Freddricklogan/student-engagement-api" rel="noopener noreferrer" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+
+  <section class="kpi-strip" aria-label="Live metrics from the demo dataset">
+    <article class="kpi"><span class="kpi__label">Active students</span><span class="kpi__value" id="kpi-students">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Learning sessions</span><span class="kpi__value" id="kpi-sessions">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Engagement events</span><span class="kpi__value" id="kpi-events">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Mean session</span><span class="kpi__value" id="kpi-duration">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Mean engagement</span><span class="kpi__value accent" id="kpi-score">&mdash;</span></article>
+  </section>
+
+  <section class="choice-grid">
+    <article class="card card--choice">
+      <h2>Open dashboard</h2>
+      <p>The analytics view: course volumes, the engagement trend, and the students the model ranks highest. It authenticates with the read-only demo account automatically.</p>
+      <a class="btn btn--primary" href="/dashboard">Open dashboard</a>
+    </article>
+
+    <article class="card card--choice">
+      <h2>Open API explorer</h2>
+      <p>Scalar reference with the OpenAPI document preloaded. Every endpoint is executable in the browser — the demo token below is all you need.</p>
+      <a class="btn btn--primary" href="/docs">Open API explorer</a>
+    </article>
+  </section>
+
+  <section class="card card--creds">
+    <h2>Demo credentials</h2>
+    <p class="muted">Read-only. Every <code>GET</code> succeeds; every write returns <code>403</code> as an RFC&nbsp;9457 <code>application/problem+json</code> document.</p>
+    <dl class="creds">
+      <div><dt>Username</dt><dd><code id="cred-user">demo</code></dd></div>
+      <div><dt>Password</dt><dd><code id="cred-pass">demo-viewer-2026</code></dd></div>
+      <div><dt>Role</dt><dd><code>viewer</code></dd></div>
+    </dl>
+    <div class="cred-actions">
+      <button class="btn btn--primary" id="btn-token" type="button">Mint a demo token</button>
+      <button class="btn btn--ghost" id="btn-copy" type="button" disabled>Copy token</button>
+    </div>
+    <p class="token-out" id="token-out" hidden></p>
+    <p class="muted small">An <code>analyst</code> account (<code>analyst</code> / <code>analyst-demo-2026</code>) exists for exercising the write endpoints.</p>
+  </section>
+
+  <section class="card">
+    <h2>30 seconds, start to finish</h2>
+    <ol class="steps">
+      <li>Click <strong>Mint a demo token</strong> above, then <strong>Copy token</strong>.</li>
+      <li>Click <strong>Open API explorer</strong> and paste the token into Scalar's <strong>Authorize</strong> box.</li>
+      <li>Run <code>GET /api/v1/analytics/summary</code> — the numbers match the KPI strip on this page.</li>
+      <li>Try <code>POST /api/v1/students</code> with the same token to see the RBAC denial as problem+json.</li>
+    </ol>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>Freddrick Logan &middot; <a href="https://github.com/Freddricklogan" rel="noopener noreferrer" target="_blank">github.com/Freddricklogan</a> &middot; <a href="https://fredlogan.phd" rel="noopener noreferrer" target="_blank">fredlogan.phd</a></p>
+</footer>
+
+<script type="module" src="/static/js/landing.js"></script>
+</body>
+</html>

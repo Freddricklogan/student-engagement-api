@@ -1,0 +1,73 @@
+name: student-engagement-api
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: student-engagement-api:local
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: local
+      DEMO_MODE: "true"
+      LOG_FORMAT: json
+      LOG_LEVEL: INFO
+      # SQLite by default — no external service needed to run the demo.
+      DATABASE_URL: sqlite+aiosqlite:////data/engagement.db
+      CORS_ALLOW_ORIGINS: http://localhost:8000
+      # JWT_SECRET_KEY is generated per process while DEMO_MODE is on.
+      # Set it explicitly (and DEMO_MODE=false) for anything real.
+    volumes:
+      - api-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  # Opt in with: docker compose --profile postgres up
+  postgres:
+    profiles: ["postgres"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: engagement
+      POSTGRES_PASSWORD: engagement
+      POSTGRES_DB: engagement
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U engagement"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # The same API image pointed at Postgres. Starts only with the profile.
+  api-postgres:
+    profiles: ["postgres"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: student-engagement-api:local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8001:8000"
+    environment:
+      ENVIRONMENT: local
+      DEMO_MODE: "true"
+      DATABASE_URL: postgresql+asyncpg://engagement:engagement@postgres:5432/engagement
+      CORS_ALLOW_ORIGINS: http://localhost:8001
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  api-data:
+  pg-data:
