@@ -1,66 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Engagement Analytics</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Student Engagement Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-    <header class="header">
-        <h1>Student Engagement Analytics</h1>
-        <div class="header-meta">
-            <span class="api-status" id="api-status">Connecting...</span>
-            <a href="/api/docs" class="docs-link">API Docs</a>
-        </div>
-    </header>
+<body class="dashboard-page">
 
-    <main class="dashboard">
-        <!-- Overview Cards -->
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="label">Total Students</div>
-                <div class="value" id="total-students">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Total Sessions</div>
-                <div class="value" id="total-sessions">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Avg Duration</div>
-                <div class="value" id="avg-duration">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Avg Engagement</div>
-                <div class="value accent" id="avg-engagement">--</div>
-            </div>
-        </div>
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__title">
+      <h1>Student Engagement Analytics</h1>
+      <p class="tagline">Course volume, engagement trend and ranked students, from the live API.</p>
+    </div>
+    <nav class="site-header__actions">
+      <span class="pill" id="api-state" data-state="checking">Connecting&hellip;</span>
+      <button class="btn btn--ghost" id="btn-tour" type="button">Take the 30-second tour</button>
+      <a class="btn btn--ghost" href="/docs">API explorer</a>
+      <a class="btn btn--ghost" href="/">Home</a>
+    </nav>
+  </div>
+</header>
 
-        <!-- Charts -->
-        <div class="grid-2">
-            <div class="card">
-                <h3>Sessions by Course</h3>
-                <div class="chart-container"><canvas id="courseChart"></canvas></div>
-            </div>
-            <div class="card">
-                <h3>Engagement Score Trend</h3>
-                <div class="chart-container"><canvas id="trendChart"></canvas></div>
-            </div>
-        </div>
+<main class="shell">
 
-        <!-- Top Students -->
-        <div class="card">
-            <h3>Top Students by Engagement</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead><tr><th>Rank</th><th>Name</th><th>Major</th><th>Sessions</th><th>Avg Score</th></tr></thead>
-                    <tbody id="top-students-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+  <section class="kpi-strip" aria-label="Headline metrics">
+    <article class="kpi" id="tour-kpis"><span class="kpi__label">Active students</span><span class="kpi__value" id="kpi-students">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Learning sessions</span><span class="kpi__value" id="kpi-sessions">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Engagement events</span><span class="kpi__value" id="kpi-events">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Mean session</span><span class="kpi__value" id="kpi-duration">&mdash;</span></article>
+    <article class="kpi"><span class="kpi__label">Mean engagement</span><span class="kpi__value accent" id="kpi-score">&mdash;</span></article>
+  </section>
 
-    <script src="/static/js/dashboard.js"></script>
+  <div class="grid-2">
+    <section class="card" id="tour-courses">
+      <h2>Sessions by course</h2>
+      <div class="chart-wrap" id="courseChart" role="img" aria-label="Sessions by course"></div>
+    </section>
+    <section class="card" id="tour-trend">
+      <h2>Engagement score trend</h2>
+      <div class="chart-wrap" id="trendChart" role="img" aria-label="Daily mean engagement score"></div>
+    </section>
+  </div>
+
+  <section class="card" id="tour-table">
+    <h2>Top students by engagement</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Rank</th><th scope="col">Name</th><th scope="col">Major</th><th scope="col">Sessions</th><th scope="col">Mean score</th></tr></thead>
+        <tbody id="top-students-body"></tbody>
+      </table>
+    </div>
+    <p class="muted small" id="rbac-note"></p>
+  </section>
+
+  <section class="card" id="tour-rbac">
+    <h2>Role-based access control</h2>
+    <p class="muted">This page is signed in as the read-only <code>viewer</code> demo account. Press the button to attempt a write and see the RFC&nbsp;9457 denial the API returns.</p>
+    <button class="btn btn--primary" id="btn-rbac" type="button">Attempt a write as viewer</button>
+    <pre class="problem-out" id="problem-out" hidden></pre>
+  </section>
+
+</main>
+
+<div class="tour-backdrop" id="tour-backdrop" hidden></div>
+<div class="tour-card" id="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title" hidden>
+  <p class="tour-step" id="tour-step"></p>
+  <h3 id="tour-title"></h3>
+  <p id="tour-body"></p>
+  <div class="tour-actions">
+    <button class="btn btn--ghost" id="tour-prev" type="button">Back</button>
+    <button class="btn btn--primary" id="tour-next" type="button">Next</button>
+    <button class="btn btn--ghost" id="tour-close" type="button">Close</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>Freddrick Logan &middot; <a href="https://github.com/Freddricklogan" rel="noopener noreferrer" target="_blank">github.com/Freddricklogan</a> &middot; <a href="https://fredlogan.phd" rel="noopener noreferrer" target="_blank">fredlogan.phd</a></p>
+</footer>
+
+<script type="module" src="/static/js/dashboard.js"></script>
 </body>
 </html>

@@ -1,0 +1,36 @@
+# Render blueprint — https://render.com/docs/blueprint-spec
+# One-click: Render dashboard -> New -> Blueprint -> point at this repository.
+services:
+  - type: web
+    name: student-engagement-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      # Demo mode seeds the deterministic dataset and the read-only `demo`
+      # account, so the deployed URL is useful with no signup. Turn this off
+      # and supply a real JWT_SECRET_KEY for anything beyond a showcase.
+      - key: DEMO_MODE
+        value: "true"
+      - key: LOG_FORMAT
+        value: json
+      - key: LOG_LEVEL
+        value: INFO
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:////data/engagement.db
+      # Replace with the real service hostname once Render assigns it.
+      - key: CORS_ALLOW_ORIGINS
+        sync: false
+    disk:
+      name: engagement-data
+      mountPath: /data
+      sizeGB: 1
