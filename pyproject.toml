@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "student-engagement-api"
+version = "2.0.0"
+description = "Engagement analytics API for online learning platforms."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+# ---------------------------------------------------------------- ruff --------
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # comprehensions
+    "DTZ",  # naive datetimes
+    "S",    # bandit-equivalent rules
+    "SIM",  # simplify
+    "RUF",  # ruff-specific
+    "ASYNC",
+    "T20",  # no print()
+    "PTH",  # pathlib
+    "RET",
+    "ARG",  # unused arguments
+]
+ignore = [
+    "B008",    # FastAPI's Depends()/Query() defaults are the documented idiom
+    "RUF012",  # ClassVar annotations not required on pydantic/SQLAlchemy configs
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106", "ARG001", "ARG002"]
+"scripts/*" = ["T20"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+# ---------------------------------------------------------------- mypy --------
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+warn_unused_ignores = true
+disallow_any_generics = true
+show_error_codes = true
+plugins = ["pydantic.mypy"]
+files = ["app", "scripts", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["scalar_fastapi.*", "slowapi.*"]
+ignore_missing_imports = true
+
+# -------------------------------------------------------------- pytest --------
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+addopts = [
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+]
+filterwarnings = [
+    "error",
+]
+
+# ------------------------------------------------------------ coverage --------
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+# SQLAlchemy's async layer runs driver code inside greenlets; without this,
+# coverage silently misses every line executed under a greenlet switch.
+concurrency = ["thread", "greenlet"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
+]
+
+# --------------------------------------------------------------- bandit -------
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
