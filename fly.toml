@@ -3,7 +3,7 @@
 # Set `app` to the name Fly assigns you before the first deploy.
 
 app = "student-engagement-api"
-primary_region = "iad"
+primary_region = "ord"
 
 [build]
   dockerfile = "Dockerfile"
@@ -46,7 +46,7 @@ primary_region = "iad"
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "512mb"
+  memory = "256mb"
 
 # Secrets are NOT stored here. Before going beyond the demo:
 #   fly secrets set DEMO_MODE=false JWT_SECRET_KEY="$(python -c 'import secrets;print(secrets.token_urlsafe(48))')"
